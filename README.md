@@ -1,79 +1,78 @@
-# DevOps-AWS-Project
-To build a CI/CD pipeline in AWS using Jenkins, SonarQube, Nexus, and Tomcat, deployed securely within a custom VPC, following real-world DevOps architecture practices.
+# 🚀 DevOps CI/CD Project on AWS – VPC, Jenkins, SonarQube, Nexus, Tomcat
 
+This project demonstrates a real-world CI/CD pipeline architecture on AWS using:
+- **Jenkins** for build automation
+- **SonarQube** for code quality analysis
+- **Nexus** for artifact management
+- **Tomcat** for application deployment
+- **AWS VPC** for secure networking and **ALB** for load balancing
 
-**Day 1 Scope**
+---
 
+## 🧠 Project Goal
 
-Set up the network architecture (VPC)
+> To deploy a secure, end-to-end CI/CD pipeline using open-source DevOps tools on AWS infrastructure, simulating production-ready architecture with public-private subnet isolation and centralized traffic handling through Load Balancer.
 
-Create public and private subnets
+---
 
-Configure routing with Internet Gateway and NAT Gateway
+## 🛠️ Tools & Services Used
 
-Deploy and test an Application Load Balancer
+| Tool / Service | Purpose                        |
+|----------------|--------------------------------|
+| **Jenkins**     | CI server to automate pipeline |
+| **SonarQube**   | Code quality and static analysis |
+| **Nexus**       | Artifact repository manager     |
+| **Apache Tomcat** | Java application deployment     |
+| **GitHub**      | Source code version control     |
+| **AWS EC2**     | Compute infrastructure          |
+| **AWS VPC**     | Secure network segmentation     |
+| **AWS ALB**     | Load balancing HTTP traffic     |
+| **NAT Gateway** | Internet access for private subnets |
+| **Bastion Host / SSM** | Secure admin access to private resources |
 
-Launch and configure Jenkins in a private subnet
+---
 
-**📍 VPC & Subnet Design**
+## 📘 Day 1 – VPC Setup & Jenkins Configuration
 
+### ✅ Objective
+Set up a secure AWS network with public and private subnets, configure routing, and deploy Jenkins as the core of our CI/CD pipeline.
 
-Component	CIDR Range	Notes
-VPC	192.168.0.0/22	Custom VPC for project
-Public Subnet 1	192.168.0.0/24	For Load Balancer
-Public Subnet 2	192.168.1.0/24	For redundancy/future use
-Private Subnet 1	192.168.2.0/24	For Jenkins, app servers
-Private Subnet 2	192.168.3.0/25	Additional private resources
-Reserved Subnets	192.168.3.128/26, 192.168.3.192/26	For future scaling
+---
 
-**🌐 Networking Setup**
+### 📌 Architecture Overview
+- **VPC CIDR:** `192.168.0.0/22`
+- **Public Subnets:** `192.168.0.0/24`, `192.168.1.0/24`
+- **Private Subnets:** `192.168.2.0/24`, `192.168.3.0/25`
+- **Reserved for future:** `192.168.3.128/26`, `192.168.3.192/26`
 
-1. Internet Gateway
-Created an Internet Gateway
+---
 
-Attached to the custom VPC
+### 🌐 Network Configuration
+- Created an **Internet Gateway** and attached it to the VPC.
+- Configured **Route Tables**:
+  - Public Subnet: Routed `0.0.0.0/0` to IGW.
+  - Private Subnet: Routed internet traffic through a **NAT Gateway** (hosted in public subnet with EIP).
+- Deployed an **Application Load Balancer** in the public subnet.
 
-Public subnets associated with a Route Table that routes 0.0.0.0/0 to this gateway
+---
 
-2. NAT Gateway
-Deployed NAT Gateway in one of the public subnets
+### 🧪 ALB Test
+- Launched a test EC2 instance with **HTTPD** in the private subnet.
+- Created a simple `index.html` inside `/var/www/html`.
+- Registered the instance to the ALB’s **target group**.
+- Successfully accessed the HTML page through the **ALB DNS name**.
 
-Allocated and attached an Elastic IP
+---
 
-Updated Private subnet Route Table to forward 0.0.0.0/0 traffic to NAT Gateway (for outbound internet)
+### 🛠️ Jenkins Setup (in Private Subnet)
+- Launched EC2 (Amazon Linux 2) in `192.168.2.0/24`.
+- Installed Java 11 and Jenkins.
+- Enabled and started Jenkins service.
+- Accessed Jenkins via **SSH port-forwarding** or **Bastion Host**.
+- Unlocked Jenkins and reached the setup dashboard.
 
-**🧪 Application Load Balancer Test**
-
-Deployed a basic EC2 instance in private subnet
-
-Installed Apache HTTPD and created index.html in /var/www/html
-
-Registered the instance in an ALB target group
-
-ALB listener on port 80 pointed to the target group
-
-Successfully accessed the HTTP page via the Load Balancer DNS
-
-**🔧 Jenkins Setup in Private Subnet**
-
-EC2 Instance:
-AMI: Amazon Linux 2
-
-Subnet: 192.168.2.0/24 (private)
-
-Instance Type: t2.medium
-
-Security Group:
-
-Port 8080 allowed from internal IPs
-
-SSH access only from Bastion Host or SSM
-
-**Jenkins Installation:**
-
-bash
-Copy
-Edit
+```bash for jenkins setup
+#!/bin/bash
 sudo yum update -y
 sudo yum install java-11-openjdk -y
 sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
@@ -81,24 +80,3 @@ sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
 sudo yum install jenkins -y
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
-Access Jenkins:
-Used SSH tunneling or bastion host for internal access
-
-**Retrieved unlock password:**
-
-bash
-Copy
-Edit
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-Jenkins was successfully unlocked and ready
-
-**🎯 Day 1 Achievements**
-
-✅ VPC + Subnets fully configured
-
-✅ Routing + NAT + IGW working
-
-✅ Load Balancer verified with test app
-
-✅ Jenkins installed and running in private subnet
-
