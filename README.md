@@ -3,6 +3,8 @@ To build a CI/CD pipeline in AWS using Jenkins, SonarQube, Nexus, and Tomcat, de
 
 
 **Day 1 Scope**
+
+
 Set up the network architecture (VPC)
 
 Create public and private subnets
@@ -13,7 +15,9 @@ Deploy and test an Application Load Balancer
 
 Launch and configure Jenkins in a private subnet
 
-📍 VPC & Subnet Design
+**📍 VPC & Subnet Design**
+
+
 Component	CIDR Range	Notes
 VPC	192.168.0.0/22	Custom VPC for project
 Public Subnet 1	192.168.0.0/24	For Load Balancer
@@ -22,7 +26,8 @@ Private Subnet 1	192.168.2.0/24	For Jenkins, app servers
 Private Subnet 2	192.168.3.0/25	Additional private resources
 Reserved Subnets	192.168.3.128/26, 192.168.3.192/26	For future scaling
 
-🌐 Networking Setup
+**🌐 Networking Setup**
+
 1. Internet Gateway
 Created an Internet Gateway
 
@@ -37,7 +42,8 @@ Allocated and attached an Elastic IP
 
 Updated Private subnet Route Table to forward 0.0.0.0/0 traffic to NAT Gateway (for outbound internet)
 
-🧪 Application Load Balancer Test
+**🧪 Application Load Balancer Test**
+
 Deployed a basic EC2 instance in private subnet
 
 Installed Apache HTTPD and created index.html in /var/www/html
@@ -48,7 +54,8 @@ ALB listener on port 80 pointed to the target group
 
 Successfully accessed the HTTP page via the Load Balancer DNS
 
-🔧 Jenkins Setup in Private Subnet
+**🔧 Jenkins Setup in Private Subnet**
+
 EC2 Instance:
 AMI: Amazon Linux 2
 
@@ -62,7 +69,8 @@ Port 8080 allowed from internal IPs
 
 SSH access only from Bastion Host or SSM
 
-Jenkins Installation:
+**Jenkins Installation:**
+
 bash
 Copy
 Edit
@@ -76,7 +84,7 @@ sudo systemctl start jenkins
 Access Jenkins:
 Used SSH tunneling or bastion host for internal access
 
-Retrieved unlock password:
+**Retrieved unlock password:**
 
 bash
 Copy
@@ -84,7 +92,8 @@ Edit
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 Jenkins was successfully unlocked and ready
 
-🎯 Day 1 Achievements
+**🎯 Day 1 Achievements**
+
 ✅ VPC + Subnets fully configured
 
 ✅ Routing + NAT + IGW working
