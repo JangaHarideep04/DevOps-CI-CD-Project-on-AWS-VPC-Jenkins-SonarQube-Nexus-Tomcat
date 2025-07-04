@@ -93,24 +93,36 @@ systemctl status jenkins.service
 chkconfig jenkins on
 ~
 
+## 📘 Day 2 – Tomcat Setup & Jenkins WAR Deployment
 
-📘 Day 2 - Jenkins WAR Deployment & Tomcat Setup
-🔧 Tasks Accomplished
-Launched a New EC2 Instance for Tomcat
+### ✅ Objective
+Deploy Apache Tomcat in a private EC2 instance and configure Jenkins to build and deploy a Maven WAR file to Tomcat, completing an end-to-end CI/CD flow.
 
-Instance launched in private subnet with appropriate security group rules (inbound: ports 22, 8081, 80 open to 0.0.0.0/0).
+---
 
-Created and associated a new Target Group (Tomcat-TG) with port 8081 for the Tomcat instance.
+### 🧩 Components Implemented
 
-Tomcat Setup via Script
-Executed the following tomcat-setup.sh script to install and run Apache Tomcat 11 on Amazon Linux 2023:
+| Component     | Description                                                                 |
+|---------------|-----------------------------------------------------------------------------|
+| Apache Tomcat | Installed and configured as the application server for deploying WAR files |
+| Jenkins       | Configured with Maven project and WAR deployment plugin                     |
+| Target Groups | Separate Target Group configured for Tomcat (port 8081)                     |
+| Load Balancer | Listener added for port 8081 to route traffic to Tomcat instance            |
 
-bash
-Copy
-Edit
+---
+
+### 🧪 Tomcat Setup in Private Subnet
+
+A new EC2 instance was launched in the private subnet (`192.168.3.0/25`). Tomcat was installed using the following custom setup script:
+
+<details>
+<summary>📜 <code>tomcat-setup.sh</code></summary>
+
+```bash
 #!/bin/bash
 
 set -e
+
 sudo yum update -y
 sudo dnf install -y java-17-amazon-corretto
 
@@ -119,6 +131,7 @@ TOMCAT_DIR=/opt/tomcat
 TOMCAT_USER=tomcat
 
 sudo useradd -r -m -U -d $TOMCAT_DIR -s /bin/false $TOMCAT_USER
+
 cd /tmp
 curl -O https://dlcdn.apache.org/tomcat/tomcat-11/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
 sudo mkdir -p $TOMCAT_DIR
@@ -134,20 +147,16 @@ After=network.target
 
 [Service]
 Type=forking
-
 User=$TOMCAT_USER
 Group=$TOMCAT_USER
-
 Environment="JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which java)))))"
 Environment="CATALINA_PID=$TOMCAT_DIR/temp/tomcat.pid"
 Environment="CATALINA_HOME=$TOMCAT_DIR"
 Environment="CATALINA_BASE=$TOMCAT_DIR"
 Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
 Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
-
 ExecStart=$TOMCAT_DIR/bin/startup.sh
 ExecStop=$TOMCAT_DIR/bin/shutdown.sh
-
 Restart=on-failure
 
 [Install]
@@ -158,32 +167,44 @@ sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable --now tomcat
 sudo systemctl status tomcat
-Fixed Tomcat Manager GUI Access
 
-Edited tomcat-users.xml and context.xml to:
+⚙️ Jenkins WAR Deployment Steps
+✅ GitHub project linked in Jenkins:
+java-maven-project-new
 
-Enable remote GUI access
+🧰 Jenkins Freestyle Project:
 
-Add roles: manager-gui, manager-script, admin-gui
+Step 1: Pull source from GitHub
 
-Add user credentials for deployment
+Step 2: Run mvn package
 
-Deployed WAR via Jenkins
+Step 3: Deploy myapp.war to Tomcat using Deploy to container plugin
 
-Configured Jenkins Deploy to container plugin.
+🔒 Tomcat Manager Access Fix
+Edited tomcat-users.xml to add:
 
-Fixed Maven command error (removed mvn from mvn package).
+xml
+Copy
+Edit
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="manager-jmx"/>
+<role rolename="manager-status"/>
+<role rolename="admin-gui"/>
+<user username="admin" password="admin" roles="admin-gui,manager-gui,manager-script,manager-status"/>
+Edited context.xml to allow all IPs:
 
-Verified WAR creation in target/ folder.
+xml
+Copy
+Edit
+<Valve className="org.apache.catalina.valves.RemoteAddrValve" allow=".*" />
+✅ Validation
+.war file built successfully and deployed to Tomcat in /opt/tomcat/webapps/
 
-Jenkins deployed WAR successfully to /webapps directory of Tomcat via port 8081.
+Application accessible via Load Balancer at http://<ALB-DNS>:8081
 
-Load Balancer Integration
+Health checks passed for port 8081 in the target group
 
-Listener configured for HTTP:8081 forwarding to Tomcat-TG
+Jenkins build logs show successful Maven package & deployment
 
-Verified deployment using curl and LB DNS.
 
-✅ Day 2 Status: Completed
-
-Next up: Nexus, SonarQube, final Jenkins pipeline and pushing everything to GitHub!!!
