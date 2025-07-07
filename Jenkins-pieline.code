@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+    stages {
+        stage('checkout') {
+            steps {
+                git 'https://github.com/JangaHarideep04/java-maven-project-new.git'
+            }
+        }
+
+        stage("Compile-Project") {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+
+        stage("Test-project") {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('sonarqube-scanning') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
+                }
+            }
+        }
+
+        stage("Generate Artifact") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Upload to Nexus') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: 'jenkins-lb-557398175.us-west-1.elb.amazonaws.com:8082',
+                    groupId: 'in.krishna',
+                    version: '8.3.3-SNAPSHOT',
+                    repository: 'Hotstar',
+                    credentialsId: 'nexus',
+                    artifacts: [[
+                        artifactId: 'myapp',
+                        classifier: '',
+                        file: 'target/myapp.war',
+                        type: 'war'
+                    ]]
+                )
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                deploy adapters: [
+                    tomcat9(
+                        credentialsId: 'admin',
+                        path: '',
+                        url: 'http://jenkins-lb-557398175.us-west-1.elb.amazonaws.com:8081/'
+                    )
+                ], contextPath: 'myapp', war: '**/*.war'
+            }
+        }
+    }
+}
