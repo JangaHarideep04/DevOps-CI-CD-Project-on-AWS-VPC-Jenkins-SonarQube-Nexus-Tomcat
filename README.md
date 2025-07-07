@@ -95,7 +95,7 @@ chkconfig jenkins on
 
 ---
 
-# 📘 Day 2 – Tomcat Setup & WAR Deployment via Jenkins
+## 📘 Day 2 – Tomcat Setup & WAR Deployment via Jenkins
 
 ### ✅ Objective
 
