@@ -156,13 +156,15 @@ EC2 instances mapped to correct subnets
 
 Target Groups and health checks
 
+📁 Suggested image folder structure:
 
-
-
-
-
-
-
+/assets/vpc-cidr.png
+/assets/subnets-overview.png
+/assets/nat-gateway.png
+/assets/route-tables.png
+/assets/alb-listeners.png
+/assets/target-groups.png
+/assets/ec2-subnet-mapping.png
 
 ✅ Final Validation
 
