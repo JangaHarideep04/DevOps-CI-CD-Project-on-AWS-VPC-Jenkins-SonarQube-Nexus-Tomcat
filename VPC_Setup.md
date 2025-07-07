@@ -93,7 +93,7 @@ Place your screenshots in `/assets/` folder:
 
 ---
 
-##Subnets:
+## Subnets:
 ![subnets](https://github.com/user-attachments/assets/c6051ea2-f914-4b17-891f-32840bd34f22)
 
 ---
@@ -123,6 +123,6 @@ Place your screenshots in `/assets/` folder:
 
 ---
 
-##Security-groups:
+## Security-groups:
 
 ![SG's](https://github.com/user-attachments/assets/ed3ae38c-83f7-4a96-8891-84fd67a9924b)
