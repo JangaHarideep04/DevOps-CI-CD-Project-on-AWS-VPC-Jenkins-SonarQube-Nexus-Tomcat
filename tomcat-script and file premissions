@@ -1,0 +1,7 @@
+#!/bin/bash
+# Setup script to install and configure Tomcat
+sudo mkdir -p /opt/tomcat
+sudo wget https://downloads.apache.org/tomcat/tomcat-11/v11.0.8/bin/apache-tomcat-11.0.8.tar.gz
+sudo tar -xvzf apache-tomcat-11.0.8.tar.gz -C /opt/tomcat --strip-components=1
+sudo chown -R jenkins:jenkins /opt/tomcat
+sudo chmod -R 755 /opt/tomcat
