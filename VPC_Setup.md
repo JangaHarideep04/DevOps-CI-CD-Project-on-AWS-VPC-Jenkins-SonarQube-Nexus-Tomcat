@@ -1,177 +1,135 @@
-📡 AWS VPC Architecture – DevOps CI/CD Project
+📡 AWS VPC Architecture - CI/CD DevOps Project
 
-This README documents the custom AWS VPC structure created for a full-stack CI/CD pipeline project involving Jenkins, SonarQube, Nexus, and Tomcat.
+This document provides a visual and structured overview of the VPC networking setup used in our end-to-end DevOps project.
 
-🧱 Project Scope: VPC Networking for CI/CD
+📘 VPC Overview
 
-This setup is part of a secure, production-style architecture built from scratch using EC2, ALB, custom subnets, NAT gateway, and more — providing secure public-private isolation for various DevOps tools.
+Property
 
-🌐 VPC CIDR & Subnetting
+Value
 
-VPC Element
-
-CIDR Range
-
-Purpose
-
-VPC
+VPC CIDR
 
 192.168.0.0/22
 
-Main network range
+Public Subnets
 
-Public Subnet 1
+192.168.0.0/24, 192.168.1.0/24
 
-192.168.0.0/24
+Private Subnets
 
-ALB, Bastion, NAT Gateway
+192.168.2.0/24, 192.168.3.0/25
 
-Public Subnet 2
+Reserved Subnets
 
-192.168.1.0/24
+192.168.3.128/26, 192.168.3.192/26
 
-Multi-AZ Load Balancer
+🌐 Subnet Distribution
 
-Private Subnet 1
+🔓 Public Subnets
 
-192.168.2.0/24
+Used for hosting:
 
-Jenkins, SonarQube
-
-Private Subnet 2
-
-192.168.3.0/25
-
-Tomcat, Nexus
-
-Reserved Future
-
-192.168.3.128/26
-
-Reserved for scaling
-
-Reserved Future
-
-192.168.3.192/26
-
-Reserved for scaling
-
-📌 Components Mapped to Subnets
-
-Component
-
-Subnet
-
-Accessibility
-
-ALB (HTTP/8081/9000/8082)
-
-Public Subnet 1 & 2
-
-Public
-
-Jenkins
-
-Private Subnet 1 (192.168.2.0/24)
-
-Private via ALB
-
-SonarQube
-
-Private Subnet 1
-
-Private via ALB
-
-Nexus
-
-Private Subnet 2
-
-Private via ALB
-
-Tomcat
-
-Private Subnet 2
-
-Private via ALB
+Load Balancer (ALB)
 
 NAT Gateway
 
-Public Subnet 1
+Bastion Host (if applicable)
 
-Shared internet for private instances
+🔐 Private Subnets
 
-Bastion/SSM
+Used for hosting:
 
-Public Subnet 1
+Jenkins (192.168.2.0/24)
 
-Admin Access
+SonarQube (192.168.2.0/24 or 192.168.3.0/25)
 
-🔁 Routing Strategy
+Nexus Repository (192.168.3.0/25)
 
-Public Route Table: 0.0.0.0/0 → IGW
+Tomcat Server (192.168.3.0/25)
 
-Private Route Table: 0.0.0.0/0 → NAT Gateway
+🔀 Routing and Gateways
 
-Subnet associations and ACLs handled manually
+🌍 Internet Gateway
 
-⚙️ Load Balancer Configuration
+Attached to the VPC
 
-Listener Port
+Associated with public subnet route table to allow inbound/outbound internet access
 
-Target Group Target
+🚪 NAT Gateway
 
-Health Check Path
+Placed in public subnet (e.g. 192.168.0.0/24)
+
+Allows private subnet EC2 instances to access internet (e.g., to download packages)
+
+🗺️ Route Tables
+
+Route Table
+
+Associated Subnets
+
+Notable Routes
+
+Public RT
+
+192.168.0.0/24, 192.168.1.0/24
+
+0.0.0.0/0 → Internet Gateway
+
+Private RT
+
+192.168.2.0/24, 192.168.3.0/25
+
+0.0.0.0/0 → NAT Gateway
+
+🎯 Target Groups
+
+Target Group Name
+
+Port
+
+Purpose
+
+jenkins-tg
+
+8080
+
+Jenkins CI interface
+
+tomcat-tg
 
 8081
 
-Tomcat Instance
+Web app deployment endpoint
 
-/myapp/
-
-8082
-
-Nexus Repo
-
-/
+sonarqube-tg
 
 9000
 
-SonarQube
+Code analysis UI
 
-/projects
+nexus-tg
 
-📷 Snapshot Uploads (To be added manually)
+8082
 
-Please add screenshots for the following via GitHub after creating /assets folder:
+Artifact repository access
 
-VPC CIDR block and subnets overview
+⚖️ Application Load Balancer (ALB)
 
-Internet Gateway and NAT Gateway setup
+Created in Public Subnets
 
-Route tables and their associations
+Listener ports configured:
 
-Load Balancer config and listeners
+8080 → Jenkins
 
-EC2 instances mapped to correct subnets
+8081 → Tomcat
 
-Target Groups and health checks
+8082 → Nexus
 
-📁 Suggested image folder structure:
+9000 → SonarQube
 
-/assets/vpc-cidr.png
-/assets/subnets-overview.png
-/assets/nat-gateway.png
-/assets/route-tables.png
-/assets/alb-listeners.png
-/assets/target-groups.png
-/assets/ec2-subnet-mapping.png
+Registered all private EC2s under appropriate target groups
 
-✅ Final Validation
+📷 Visual Snapshots (To Be Uploaded)
 
-All components are properly isolated in private subnets
-
-ALB routes requests to Jenkins, Tomcat, Nexus, SonarQube
-
-NAT gateway allows private instances to access the internet
-
-Project deploys end-to-end from GitHub → Jenkins → Sonar → Nexus → Tomcat
+Place your screenshots in /assets/ folder:
