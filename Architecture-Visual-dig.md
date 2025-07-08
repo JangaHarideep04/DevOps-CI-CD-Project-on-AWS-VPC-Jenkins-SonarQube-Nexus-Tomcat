@@ -15,7 +15,6 @@ C --> D2[SonarQube in Private Subnet]
 C --> D3[Nexus in Private Subnet]
 C --> D4[Tomcat in Private Subnet]
 
----
 
 
 🔄 Workflow Description
