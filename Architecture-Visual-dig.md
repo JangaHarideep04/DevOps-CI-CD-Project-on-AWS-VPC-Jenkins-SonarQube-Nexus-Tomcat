@@ -16,15 +16,17 @@ C --> D3[Nexus in Private Subnet]
 C --> D4[Tomcat in Private Subnet]
 
 ```
+---
 
 ## 🔄 Workflow Description
-User Access
+## User Access
 
 User hits the ALB DNS URL in browser.
 
 ALB routes requests to appropriate target based on port listener (8080 for Jenkins, 8081 for Tomcat, etc.).
 
-Public Subnet
+
+## Public Subnet
 
 Contains the Application Load Balancer (ALB) and NAT Gateway.
 
@@ -32,7 +34,8 @@ ALB acts as a central traffic manager.
 
 NAT Gateway enables outbound internet access for private EC2 instances.
 
-Private Subnet
+
+## Private Subnet
 
 Jenkins handles CI pipeline and manages all automation.
 
@@ -42,7 +45,8 @@ Nexus stores versioned build artifacts (WAR files).
 
 Tomcat is the final deployment environment for the application.
 
-CI/CD Pipeline Flow
+
+## CI/CD Pipeline Flow
 
 Jenkins pulls code from GitHub.
 
