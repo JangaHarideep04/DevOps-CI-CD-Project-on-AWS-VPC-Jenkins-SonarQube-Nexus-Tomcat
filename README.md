@@ -233,6 +233,9 @@ pipeline {
 
 ---
 
+![tomcat-final](https://github.com/user-attachments/assets/c2e765a8-9a30-44c1-a6bd-e295d577c1e0)
+
+---
 ## 🎉 Project Outcome
 
 - Full CI/CD flow from Git to production using Jenkins.
